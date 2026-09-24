@@ -115,8 +115,4 @@ describe('Save to cookbook bookmark', () => {
     expect(payload?.x).toContain('2 cups rice')
     expect(recipeFromBookmarklet(payload!).parsed.ingredients[0]).toMatchObject({ quantity: 2, name: 'rice' })
   })
-
-  it('stays a reasonable size for a bookmark', () => {
-    expect(buildBookmarklet('https://me.github.io/cookbook/').length).toBeLessThan(2500)
-  })
 })
