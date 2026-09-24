@@ -1,9 +1,10 @@
 import { Fragment } from 'react'
 import { ClockIcon, PlusIcon, ThermometerIcon } from './Icon'
 import { useTimers } from '../state/TimerStore'
-import { formatClock, formatMinutes, formatTemperature } from '../lib/recipe'
+import { formatClock, formatMinutes, formatTemperature, runsBy } from '../lib/recipe'
+import { MentionText } from './IngredientMention'
 import { FOOD_KEYWORDS } from '../services/parser/vocabulary'
-import type { Direction, TemperatureUnit } from '../types/recipe'
+import type { Direction, Ingredient, TemperatureUnit } from '../types/recipe'
 import styles from './DirectionList.module.css'
 
 /** Staples are rarely what a timer is *for*, so they never name one. */
@@ -29,9 +30,16 @@ interface DirectionStepProps {
   direction: Direction
   recipeId: string
   temperatureUnit: TemperatureUnit
+  /** The ingredients list, scaled, so a step's mentions show the right amounts. */
+  ingredients?: Ingredient[]
 }
 
-export function DirectionStep({ direction, recipeId, temperatureUnit }: DirectionStepProps) {
+export function DirectionStep({
+  direction,
+  recipeId,
+  temperatureUnit,
+  ingredients = [],
+}: DirectionStepProps) {
   const { startTimer, timerForDirection, pauseTimer, resumeTimer, dismissTimer } = useTimers()
   const timer = timerForDirection(direction.id)
   const label = timerLabel(direction)
@@ -48,7 +56,9 @@ export function DirectionStep({ direction, recipeId, temperatureUnit }: Directio
         <h3 className={styles.stepNumber}>Step {direction.step}</h3>
       </div>
 
-      <p className={styles.text}>{direction.text}</p>
+      <p className={styles.text}>
+        <MentionText text={direction.text} ingredients={ingredients} />
+      </p>
 
       {hasExtras ? (
         <div className={styles.tags}>
@@ -121,23 +131,39 @@ interface DirectionListProps {
   directions: Direction[]
   recipeId: string
   temperatureUnit: TemperatureUnit
+  ingredients?: Ingredient[]
 }
 
-export function DirectionList({ directions, recipeId, temperatureUnit }: DirectionListProps) {
+export function DirectionList({
+  directions,
+  recipeId,
+  temperatureUnit,
+  ingredients,
+}: DirectionListProps) {
+  const runs = runsBy(directions, (direction) => direction.section)
+
   return (
-    <ol className={styles.list}>
-      {directions.map((direction, index) => (
-        <Fragment key={direction.id}>
-          <DirectionStep
-            direction={direction}
-            recipeId={recipeId}
-            temperatureUnit={temperatureUnit}
-          />
-          {index < directions.length - 1 ? (
-            <li className={styles.divider} aria-hidden="true" />
-          ) : null}
-        </Fragment>
+    <div className={styles.sections}>
+      {runs.map((run, runIndex) => (
+        <section key={`${run.label ?? ''}-${runIndex}`}>
+          {run.label ? <h3 className={styles.sectionTitle}>{run.label}</h3> : null}
+          <ol className={styles.list} start={run.items[0].step}>
+            {run.items.map((direction, index) => (
+              <Fragment key={direction.id}>
+                <DirectionStep
+                  direction={direction}
+                  recipeId={recipeId}
+                  temperatureUnit={temperatureUnit}
+                  ingredients={ingredients}
+                />
+                {index < run.items.length - 1 ? (
+                  <li className={styles.divider} aria-hidden="true" />
+                ) : null}
+              </Fragment>
+            ))}
+          </ol>
+        </section>
       ))}
-    </ol>
+    </div>
   )
 }

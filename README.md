@@ -15,7 +15,7 @@ No backend. No database. No accounts. No AI parsing.
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 130 tests: parser, importers, and app render tests (vitest)
+npm test         # 170 tests: parser, importers, a real-caption corpus, and app render tests (vitest)
 npm run build    # type-check + production build into dist/
 npm run preview  # serve the production build locally
 ```
@@ -114,10 +114,16 @@ the same output. `src/services/parser/`:
 - A spoken "degrees" with no scale is °F above 100 and °C at or below.
 - A time range (`3-4 minutes`) sets the timer at the lower bound, so a timer
   never runs past the point food is done.
+- Ingredient groups (`For the sauce:`, `~Spicy mayo~`, recipe-card group
+  headings) are kept on each ingredient, and method headings (`Reheat (from
+  frozen)`, schema.org `HowToSection`) on each step. Duplicates are only added
+  up within one group.
 - Meal types (Breakfast, Lunch, Dinner, Sides, Snacks, Dessert, Drinks) are
   guessed from the title, hashtags and schema.org category, and are editable.
 
-The tests pin cases from real captions and real recipe sites; the importers
+The tests pin cases from real captions and real recipe sites
+(`captionCorpus.json` holds 29 real TikTok captions with their expected titles,
+ingredient counts and step counts); the importers
 were checked against live pages from Budget Bytes, BBC Good Food, RecipeTin Eats
 and Taming Twins, and against a live TikTok video.
 
@@ -128,7 +134,7 @@ and Taming Twins, and against a live TikTok video.
 ```
 src/
   components/     AppShell, RecipeImporter, RecipeHero, RecipeMeta, SegmentedTabs,
-                  IngredientList, DirectionList, ServingSelector, TimerDock,
+                  IngredientList, DirectionList, IngredientMention, ServingSelector, TimerDock,
                   RecipeCard, RecipeEditor, SearchBar, EmptyState, Icon
   pages/          Home, Recipes, RecipeDetails, RecipeEdit, Settings, ImportLanding
   services/
@@ -140,7 +146,8 @@ src/
                   sections, reflow, recipeParser, vocabulary
   state/          RecipeStore (recipes + settings), TimerStore (cross-page timers)
   storage/        recipeStorage (localStorage, fully guarded)
-  lib/            recipe helpers, mealTypes (labels + classifier)
+  lib/            recipe helpers, mealTypes (labels + classifier),
+                  mentions (ingredients named in a step)
   data/           demo recipes
   types/          Recipe, Ingredient, Direction, ParsedRecipe, MealType
 ```
@@ -161,6 +168,11 @@ replacing `storage/recipeStorage.ts`.
   sort by newest, A–Z or quickest.
 - **Editing** — every field, including meal types, with add / remove / reorder
   for ingredients and steps.
+- **Groups and sections** — ingredients are listed under the groups the
+  caption or site gives them, and steps under their sections; both editable.
+- **Ingredients in steps** — an ingredient named in a step ("the chicken",
+  "the oil") shows its line from the ingredients list, scaled. It opens on hover
+  with a mouse, on tap on a phone, and from the keyboard; Escape closes it.
 - **Servings scaling** — rescales from the base servings as clean fractions.
 - **Timers** — one tap from any step with a duration; they survive navigation
   and reloads, and count from wall-clock time so a throttled tab stays accurate.

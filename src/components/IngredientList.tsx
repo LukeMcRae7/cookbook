@@ -1,5 +1,5 @@
 import { CheckIcon, DragIcon } from './Icon'
-import { formatIngredientAmount } from '../lib/recipe'
+import { formatIngredientAmount, runsBy } from '../lib/recipe'
 import type { Ingredient } from '../types/recipe'
 import styles from './IngredientList.module.css'
 
@@ -72,15 +72,20 @@ export function IngredientList({
         </p>
       ) : null}
 
-      <ul className={styles.list}>
-        {ingredients.map((ingredient) => (
-          <IngredientRow
-            key={ingredient.id}
-            ingredient={ingredient}
-            onToggle={(checked) => onToggle(ingredient.id, checked)}
-          />
-        ))}
-      </ul>
+      {runsBy(ingredients, (ingredient) => ingredient.group).map((run, index) => (
+        <section key={`${run.label ?? ''}-${index}`} className={styles.group}>
+          {run.label ? <h3 className={styles.groupTitle}>{run.label}</h3> : null}
+          <ul className={styles.list}>
+            {run.items.map((ingredient) => (
+              <IngredientRow
+                key={ingredient.id}
+                ingredient={ingredient}
+                onToggle={(checked) => onToggle(ingredient.id, checked)}
+              />
+            ))}
+          </ul>
+        </section>
+      ))}
 
       {ingredients.length > 0 ? (
         <div className={styles.footer}>

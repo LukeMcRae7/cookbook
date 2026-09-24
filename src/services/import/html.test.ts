@@ -63,6 +63,47 @@ describe('recipe pages without JSON-LD', () => {
   })
 })
 
+const GROUPED_PAGE = `<html><head><script type="application/ld+json">{"@context":"https://schema.org","@type":"Recipe",
+  "name":"Chicken Tikka Masala",
+  "recipeIngredient":["1 tsp (2 g) garam masala","1/2 cup (125 g) yogurt","1 lb chicken thighs","1 tsp garam masala","1 can (400 g) crushed tomatoes"],
+  "recipeInstructions":[
+    {"@type":"HowToSection","name":"Chicken Tikka","itemListElement":[{"@type":"HowToStep","text":"Marinate the chicken in the yogurt for 1 hour."}]},
+    {"@type":"HowToSection","name":"Sauce","itemListElement":[{"@type":"HowToStep","text":"Simmer the tomatoes for 20 minutes."}]}
+  ]}</script></head><body>
+<div class="wprm-recipe-container"><div class="wprm-recipe-ingredients-container">
+  <h3 class="wprm-recipe-header">Ingredients <button>1x</button><button>2x</button></h3>
+  <div class="wprm-recipe-ingredient-group"><h4 class="wprm-recipe-group-name">Marinade</h4>
+    <ul><li>1 tsp garam masala</li><li>1/2 cup yogurt</li><li>1 lb chicken thighs</li></ul></div>
+  <div class="wprm-recipe-ingredient-group"><h4 class="wprm-recipe-group-name">Curry Sauce:</h4>
+    <ul><li>1 tsp garam masala</li><li>1 can crushed tomatoes</li></ul></div>
+</div></div></body></html>`
+
+describe('ingredient groups and method sections from recipe sites', () => {
+  it('reads the group headings a recipe card shows', () => {
+    const result = recipeFromHtml(GROUPED_PAGE, 'https://site.test/tikka')
+    expect(result.parsed.ingredients.map((i) => [i.name, i.group])).toEqual([
+      ['garam masala', 'Marinade'],
+      ['yogurt', 'Marinade'],
+      ['chicken thighs', 'Marinade'],
+      ['garam masala', 'Curry Sauce'],
+      ['tomatoes', 'Curry Sauce'],
+    ])
+  })
+
+  it('keeps HowToSection names as sections of the method', () => {
+    const result = recipeFromHtml(GROUPED_PAGE, 'https://site.test/tikka')
+    expect(result.parsed.directions.map((d) => d.section)).toEqual(['Chicken Tikka', 'Sauce'])
+  })
+
+  it('leaves ingredients ungrouped when the card has no group headings', () => {
+    const result = recipeFromHtml(
+      GROUPED_PAGE.replace(/<h4[^>]*>[^<]*<\/h4>/g, ''),
+      'https://site.test/tikka',
+    )
+    expect(result.parsed.ingredients.every((i) => i.group === undefined)).toBe(true)
+  })
+})
+
 describe('Save to cookbook bookmark', () => {
   /** Runs the generated bookmarklet in this document and returns the URL it opens. */
   function runBookmarklet(appUrl: string): string {
@@ -98,6 +139,17 @@ describe('Save to cookbook bookmark', () => {
     expect(result).toMatchObject({ title: 'Lemon Bars', author: 'Jo Cook' })
     expect(result.parsed.ingredients).toHaveLength(2)
     expect(result.parsed.directions[0].timerSeconds).toBe(1200)
+  })
+
+  it('sends the recipe card’s ingredient groups along with the Recipe node', () => {
+    const doc = new DOMParser().parseFromString(GROUPED_PAGE, 'text/html')
+    document.head.innerHTML = doc.head.innerHTML
+    document.body.innerHTML = doc.body.innerHTML
+
+    const payload = payloadFrom(runBookmarklet('https://me.github.io/cookbook/'))
+    expect(payload?.g?.[0]).toEqual(['1 tsp garam masala', 'Marinade'])
+    const groups = recipeFromBookmarklet(payload!).parsed.ingredients.map((i) => i.group)
+    expect(groups).toEqual(['Marinade', 'Marinade', 'Marinade', 'Curry Sauce', 'Curry Sauce'])
   })
 
   it('falls back to the page text when there is no structured data', () => {

@@ -128,6 +128,7 @@ export function RecipeDetails() {
                 directions={recipe.directions}
                 recipeId={recipe.id}
                 temperatureUnit={settings.temperatureUnit}
+                ingredients={ingredients}
               />
             ) : (
               <p className={styles.missing}>No steps yet. Edit the recipe to add them.</p>

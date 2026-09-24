@@ -119,6 +119,60 @@ describe('App', () => {
     expect(container.querySelector('[aria-label="Active timers"]')).not.toBeNull()
   })
 
+  it('shows an ingredient’s line from the list when a step mentions it', () => {
+    renderAt('#/recipes/demo-chicken-curry')
+    const directionsTab = Array.from(container.querySelectorAll('[role="tab"]')).find((tab) =>
+      tab.textContent?.includes('Directions'),
+    )
+    click(directionsTab)
+
+    const mention = Array.from(container.querySelectorAll('button[aria-expanded]')).find(
+      (button) => button.textContent === 'olive oil',
+    )
+    expect(mention).toBeDefined()
+    click(mention)
+    expect(mention?.getAttribute('aria-expanded')).toBe('true')
+    const card = document.getElementById(mention?.getAttribute('aria-describedby') ?? '')
+    expect(card?.textContent).toContain('2 tbsp')
+    expect(card?.textContent).toContain('olive oil')
+
+    act(() => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    })
+    expect(mention?.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('lists ingredients under the groups the recipe gives them', () => {
+    const recipe = {
+      id: 'grouped',
+      title: 'Sandwiches',
+      sourceUrl: '',
+      servings: 2,
+      difficulty: 'Easy',
+      ingredients: [
+        { id: 'a', name: 'eggs', quantity: 4, displayQuantity: '4', checked: false, group: 'Sheet pan eggs' },
+        { id: 'b', name: 'mayo', quantity: 2, displayQuantity: '2', unit: 'tbsp', checked: false, group: 'Spicy mayo' },
+      ],
+      directions: [
+        { id: 'd1', step: 1, text: 'Bake the eggs.', section: 'Cook' },
+        { id: 'd2', step: 2, text: 'Heat from frozen.', section: 'Reheat' },
+      ],
+      createdAt: '2026-09-01T00:00:00.000Z',
+      updatedAt: '2026-09-01T00:00:00.000Z',
+      favorite: false,
+    }
+    window.localStorage.setItem('cookbook.seeded.v1', '1')
+    window.localStorage.setItem('cookbook.recipes.v1', JSON.stringify([recipe]))
+    renderAt('#/recipes/grouped')
+
+    const headings = Array.from(container.querySelectorAll('h3')).map((h) => h.textContent)
+    expect(headings).toEqual(expect.arrayContaining(['Sheet pan eggs', 'Spicy mayo']))
+
+    click(Array.from(container.querySelectorAll('[role="tab"]')).find((tab) => tab.textContent?.includes('Directions')))
+    const sections = Array.from(container.querySelectorAll('h3')).map((h) => h.textContent)
+    expect(sections).toEqual(expect.arrayContaining(['Cook', 'Reheat']))
+  })
+
   it('scales ingredient quantities when servings change', () => {
     renderAt('#/recipes/demo-chicken-curry')
     expect(textOf()).toContain('1 cup')

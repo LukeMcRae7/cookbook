@@ -81,7 +81,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: 84px 104px 1fr 1fr auto;
+  grid-template-columns: 84px 104px 1fr 1fr 0.8fr auto;
   gap: 8px;
   align-items: center;
   padding: 10px;
@@ -297,7 +297,8 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .row > .rowTools {
+  .row > .rowTools,
+  .row > .groupField {
     grid-column: span 2;
     justify-content: flex-end;
   }

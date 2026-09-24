@@ -72,6 +72,11 @@ export function RecipeEditor({
       ),
     }))
 
+  const distinct = (values: (string | undefined)[]) =>
+    Array.from(new Set(values.map((value) => value?.trim()).filter((value): value is string => Boolean(value))))
+  const groupNames = distinct(draft.ingredients.map((ingredient) => ingredient.group))
+  const sectionNames = distinct(draft.directions.map((direction) => direction.section))
+
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     const cleaned: Recipe = {
@@ -273,6 +278,14 @@ export function RecipeEditor({
             <option key={unit} value={unit} />
           ))}
         </datalist>
+        <datalist id="group-options">
+          {groupNames.map((group) => (
+            <option key={group} value={group} />
+          ))}
+        </datalist>
+        <p className={styles.hint}>
+          Group is optional: rows sharing one ("Sauce", "Dough") are listed under that heading.
+        </p>
 
         <ul className={styles.rows}>
           {draft.ingredients.map((ingredient, index) => (
@@ -343,6 +356,22 @@ export function RecipeEditor({
                 />
               </div>
 
+              <div className={`${styles.field} ${styles.groupField}`}>
+                <label className="sr-only" htmlFor={`group-${ingredient.id}`}>
+                  Group for ingredient {index + 1}
+                </label>
+                <input
+                  id={`group-${ingredient.id}`}
+                  className={styles.input}
+                  list="group-options"
+                  value={ingredient.group ?? ''}
+                  placeholder="Group"
+                  onChange={(event) =>
+                    patchIngredient(ingredient.id, { group: event.target.value || undefined })
+                  }
+                />
+              </div>
+
               <div className={styles.rowTools}>
                 <button
                   type="button"
@@ -395,6 +424,11 @@ export function RecipeEditor({
 
       <section className={styles.card}>
         <h2 className={styles.cardTitle}>Directions</h2>
+        <datalist id="section-options">
+          {sectionNames.map((section) => (
+            <option key={section} value={section} />
+          ))}
+        </datalist>
         <ol className={styles.rows}>
           {draft.directions.map((direction, index) => (
             <li key={direction.id} className={styles.stepRow}>
@@ -455,6 +489,22 @@ export function RecipeEditor({
               />
 
               <div className={styles.stepExtras}>
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor={`section-${direction.id}`}>
+                    Section
+                  </label>
+                  <input
+                    id={`section-${direction.id}`}
+                    className={styles.input}
+                    list="section-options"
+                    value={direction.section ?? ''}
+                    placeholder="Optional"
+                    onChange={(event) =>
+                      patchDirection(direction.id, { section: event.target.value || undefined })
+                    }
+                  />
+                </div>
+
                 <div className={styles.field}>
                   <label className={styles.label} htmlFor={`timer-${direction.id}`}>
                     Timer (minutes)

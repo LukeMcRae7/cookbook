@@ -1,0 +1,76 @@
+.mention {
+  display: inline;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  text-decoration: underline dotted var(--ink-faint);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.14s ease, text-decoration-color 0.14s ease;
+}
+
+.mention:hover,
+.active {
+  background: var(--accent-soft);
+  text-decoration-color: var(--ink-soft);
+}
+
+.mention:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.card {
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 24px));
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft), 0 12px 28px -12px rgb(0 0 0 / 0.28);
+}
+
+.line {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.line + .line {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.group {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.amount {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.prep {
+  color: var(--ink-soft);
+  font-weight: 500;
+}

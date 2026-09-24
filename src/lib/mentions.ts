@@ -1,5 +1,4 @@
 import type { Ingredient } from '../types/recipe'
-import { FOOD_KEYWORDS } from '../services/parser/vocabulary'
 
 /**
  * Finding ingredients mentioned in a step, so the step can show what "the
@@ -27,17 +26,24 @@ const DESCRIPTORS = new Set([
   'thick', 'thin', 'reduced', 'sodium', 'low', 'fat', 'light', 'heavy',
 ])
 
-/** The part of a food that stands for the whole: "chicken breasts" -> "chicken". */
-const CUTS = new Set([
+/**
+ * The part or form of a food, which the food's own name stands for:
+ * "chicken breasts" -> "chicken", "ginger root" -> "ginger", "lemon juice" -> "lemon".
+ */
+const PARTS = new Set([
   'breast', 'breasts', 'thigh', 'thighs', 'wing', 'wings', 'fillet', 'fillets',
-  'filet', 'filets', 'clove', 'cloves', 'bulb', 'bulbs', 'leaves', 'sprigs',
-  'stalks', 'florets', 'cubes', 'strips', 'slices', 'pieces', 'side', 'loin',
+  'filet', 'filets', 'loin', 'clove', 'cloves', 'bulb', 'bulbs', 'leaves',
+  'sprig', 'sprigs', 'stalk', 'stalks', 'florets', 'cubes', 'strips', 'slices',
+  'pieces', 'root', 'stick', 'sticks', 'extract', 'juice', 'zest',
 ])
+
+/** Meat cuts still name the ingredient on their own: "slice the thighs". */
+const MEAT_CUTS = new Set(['breast', 'breasts', 'thigh', 'thighs', 'wing', 'wings', 'fillet', 'fillets', 'filet', 'filets', 'loin'])
 
 /** Too vague to stand in for one ingredient on their own: "the sauce", "the mixture". */
 const VAGUE = new Set([
   'sauce', 'mixture', 'mix', 'seasoning', 'spice', 'spices', 'powder', 'flakes',
-  'seeds', 'leaves', 'extract', 'paste', 'juice', 'zest', 'cheese', 'mayo',
+  'seeds', 'paste', 'cheese', 'mayo',
 ])
 
 function variants(phrase: string): string[] {
@@ -75,12 +81,13 @@ export function namesFor(ingredient: Ingredient): string[] {
     // Trailing sub-phrases: "extra virgin olive oil" -> "olive oil" -> "oil"
     for (let i = 1; i < core.length; i += 1) {
       const tail = core.slice(i)
-      if (tail.length === 1 && VAGUE.has(tail[0])) continue
+      const [word] = tail
+      if (tail.length === 1 && (VAGUE.has(word) || (PARTS.has(word) && !MEAT_CUTS.has(word)))) continue
       add(tail.join(' '))
     }
-    // "chicken breasts" -> "chicken", "garlic cloves" -> "garlic"
-    if (core.length >= 2 && CUTS.has(core[core.length - 1]) && FOOD_KEYWORDS.has(core[core.length - 2])) {
-      add(core[core.length - 2])
+    // "chicken breasts" -> "chicken", "vanilla extract" -> "vanilla"
+    if (core.length >= 2 && PARTS.has(core[core.length - 1])) {
+      add(core.slice(0, -1).join(' '))
     }
   }
   return Array.from(names).sort((a, b) => b.length - a.length)
@@ -104,7 +111,8 @@ export function findIngredientMentions(text: string, ingredients: Ingredient[]):
     }
   }
 
-  // Longest spans first; merge identical spans; drop anything overlapping a kept span.
+  // Longest spans first; merge identical spans; drop anything overlapping a kept
+  // span. A name shared by olive oil and sesame oil ("the oil") points at both.
   hits.sort((a, b) => b.end - b.start - (a.end - a.start) || a.start - b.start)
   const kept: Mention[] = []
   for (const hit of hits) {
@@ -116,9 +124,5 @@ export function findIngredientMentions(text: string, ingredients: Ingredient[]):
     if (kept.some((mention) => hit.start < mention.end && mention.start < hit.end)) continue
     kept.push({ ...hit, ingredients: [...hit.ingredients] })
   }
-
-  // When a name belongs to several ingredients, only a longer, more specific
-  // ingredient name should win it: "oil" for a recipe with olive oil and
-  // sesame oil points at both, which is honest.
   return kept.sort((a, b) => a.start - b.start)
 }

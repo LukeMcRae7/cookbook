@@ -3,6 +3,19 @@
   flex-direction: column;
 }
 
+.group + .group {
+  margin-top: 18px;
+}
+
+.groupTitle {
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
 .row {
   display: flex;
   align-items: center;

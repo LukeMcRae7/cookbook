@@ -101,7 +101,7 @@ function overlap(a: Set<string>, b: Set<string>): number {
  * A heading above an ingredient list that names no group: the card's own
  * "Ingredients" title (with its "1x 2x 3x" scaling buttons), unit toggles.
  */
-function groupFromHeading(text: string): string {
+export function groupFromHeading(text: string): string {
   const name = text.replace(/:$/, '').trim()
   const forGroup = /^ingredients?\s+for\s+(?:the\s+)?(.+)$/i.exec(name)
   if (forGroup) return forGroup[1].charAt(0).toUpperCase() + forGroup[1].slice(1)

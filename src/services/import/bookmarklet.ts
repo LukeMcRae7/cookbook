@@ -7,7 +7,7 @@
  * server — so it stays private and needs no backend.
  */
 
-import { groupResolver, recipeFromHtml, recipeFromText } from './htmlRecipe'
+import { groupFromHeading, groupResolver, recipeFromHtml, recipeFromText } from './htmlRecipe'
 import { findRecipeNode, recipeFromSchema, type Json } from './schemaRecipe'
 import { siteLabel } from './detect'
 import type { ImportResult } from './types'
@@ -45,8 +45,8 @@ function x(o,m,d){if(!o||typeof o!='object'||d>8)return;if(o instanceof Array){f
 if(o['@id']&&Object.keys(o).length>1&&!m[o['@id']])m[o['@id']]=o;for(var k in o)x(o[k],m,d+1)}
 function y(v,m){return v&&v['@id']&&m[v['@id']]?m[v['@id']]:v}
 if(r){var m={};x(a,m,0);['author','image'].forEach(function(k){var v=r[k];r[k]=v instanceof Array?v.map(function(z){return y(z,m)}):y(v,m)})}
-var c=document.querySelector('.wprm-recipe-ingredients-container,.tasty-recipes-ingredients,.mv-create-ingredients,[class*="recipe-ingredients"]')||document.querySelector('[class*="ingredients"]'),g=[],h='';
-if(r&&c)c.querySelectorAll('h2,h3,h4,h5,h6,[class*="group-name"],[class*="group-title"],li').forEach(function(e){var t=e.textContent.replace(/\\s+/g,' ').trim().replace(/:$/,'');if(e.tagName=='LI'){if(h)g.push([t.slice(0,160),h])}else h=/^(ingredients?|equipment|us customary|metric)$/i.test(t)?'':t});
+var c=document.querySelector('[class*="recipe-ingredients"]')||document.querySelector('[class*="ingredients"]'),g=[],h='';
+if(r&&c)c.querySelectorAll('h2,h3,h4,h5,h6,[class*="group-name"],[class*="group-title"],li').forEach(function(e){var t=e.textContent.replace(/\\s+/g,' ').trim().replace(/:$/,'');if(e.tagName=='LI'){if(h)g.push([t.slice(0,160),h])}else h=t});
 var m=r?null:document.querySelector('[itemtype*="schema.org/Recipe"]');
 var o=document.querySelector('meta[property="og:image"]');
 var p={u:location.href,t:document.title,r:r,i:o?o.content:'',g:g};
@@ -70,7 +70,9 @@ export function recipeFromBookmarklet(payload: BookmarkletPayload): ImportResult
   const fallbacks = { title: payload.t, image: payload.i || undefined }
   const node = findRecipeNode(payload.r ?? null)
   if (node) {
-    const pairs = Array.isArray(payload.g) ? payload.g.filter((pair) => Array.isArray(pair) && pair.length === 2) : []
+    const pairs = (Array.isArray(payload.g) ? payload.g : [])
+      .filter((pair) => Array.isArray(pair) && pair.length === 2 && typeof pair[1] === 'string')
+      .map(([line, heading]): [string, string] => [String(line), groupFromHeading(heading)])
     return recipeFromSchema(node, payload.u, fallbacks, undefined, groupResolver(pairs))
   }
   if (payload.h) return recipeFromHtml(payload.h, payload.u)
