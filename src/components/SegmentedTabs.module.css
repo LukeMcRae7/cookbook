@@ -1,0 +1,40 @@
+.tabs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  padding: 5px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-pill);
+}
+
+.tab {
+  min-height: var(--tap);
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--ink-soft);
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.active {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 6px 16px -8px rgba(20, 23, 26, 0.8);
+}
+
+.active:hover {
+  color: #fff;
+}
+
+.count {
+  margin-left: 7px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  opacity: 0.55;
+}

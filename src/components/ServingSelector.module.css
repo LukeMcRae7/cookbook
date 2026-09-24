@@ -1,0 +1,67 @@
+.selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.button {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-sunken);
+  color: var(--ink);
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--sage-200);
+}
+
+.button:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.value {
+  min-width: 78px;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.count {
+  display: block;
+  font-size: 1.12rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.scaled {
+  color: var(--accent);
+}
+
+/* Touch targets stay 44px without making the control look chunky. */
+.button::after {
+  content: '';
+  position: absolute;
+}
+
+@media (pointer: coarse) {
+  .button {
+    width: var(--tap);
+    height: var(--tap);
+  }
+}

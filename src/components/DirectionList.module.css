@@ -1,0 +1,160 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.step {
+  padding: 18px 0;
+  border-radius: var(--radius-lg);
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* Steps carrying a timer or temperature get the raised card treatment. */
+.stepCard {
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+}
+
+.stepActive {
+  border-color: var(--accent-soft-strong);
+  background: linear-gradient(180deg, #fbfbff, #ffffff);
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.stepNumber {
+  font-size: 1.32rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.text {
+  font-size: 1.08rem;
+  line-height: 1.55;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.tempTag {
+  background: var(--cool-soft);
+  color: #1f4f9c;
+}
+
+.timeTag {
+  background: var(--warm-soft);
+  color: #8a5610;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.startTimer {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--tap);
+  padding: 6px 20px 6px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-muted);
+  font-weight: 800;
+  font-size: 0.98rem;
+  color: var(--ink);
+  transition: background 0.16s ease, transform 0.12s ease;
+}
+
+.startTimer:hover {
+  background: var(--surface-sunken);
+}
+
+.startTimer:active {
+  transform: scale(0.98);
+}
+
+.startIcon {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  box-shadow: 0 6px 14px -6px var(--green-dark);
+}
+
+.runningTimer {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--tap);
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: #fff;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.timerDone {
+  background: var(--warm);
+}
+
+.ghostAction {
+  min-height: var(--tap);
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.ghostAction:hover {
+  background: var(--surface-muted);
+  color: var(--ink);
+}
+
+.divider {
+  height: 1px;
+  background: var(--line);
+  margin: 2px 0;
+}
+
+@media (max-width: 719px) {
+  .text {
+    font-size: 1.02rem;
+  }
+
+  .stepCard {
+    padding: 18px;
+  }
+}

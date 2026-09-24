@@ -1,0 +1,138 @@
+.dock {
+  position: fixed;
+  right: 20px;
+  bottom: calc(env(safe-area-inset-bottom) + var(--bottom-nav-height) + 20px);
+  z-index: 40;
+  width: min(330px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+  border: 1px solid var(--line);
+}
+
+.done {
+  background: #fff7e8;
+  border-color: rgba(212, 137, 42, 0.35);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: var(--shadow-float);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(212, 137, 42, 0.16), var(--shadow-float);
+  }
+}
+
+.ring {
+  --progress: 0;
+  position: relative;
+  width: 46px;
+  height: 46px;
+  flex: none;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--warm) calc(var(--progress) * 1%),
+    var(--surface-sunken) 0
+  );
+  display: grid;
+  place-items: center;
+}
+
+.ring::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.ringIcon {
+  position: relative;
+  z-index: 1;
+  color: var(--warm);
+  display: grid;
+  place-items: center;
+}
+
+.body {
+  min-width: 0;
+  flex: 1;
+}
+
+.label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clock {
+  font-size: 1.32rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.doneLabel {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--warm);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.control {
+  width: var(--tap);
+  height: var(--tap);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--ink-soft);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.control:hover {
+  background: var(--surface-muted);
+  color: var(--ink);
+}
+
+.primary {
+  background: var(--ink);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+}
+
+.primary:hover {
+  background: var(--ink);
+  color: #fff;
+  opacity: 0.88;
+}
+
+@media (max-width: 719px) {
+  .dock {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    bottom: calc(env(safe-area-inset-bottom) + var(--bottom-nav-height) + 16px);
+  }
+}

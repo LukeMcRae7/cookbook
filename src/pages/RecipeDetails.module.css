@@ -1,0 +1,179 @@
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 12px 20px 40px;
+}
+
+.card {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.hero {
+  width: 100%;
+}
+
+.content {
+  padding: 26px 32px 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* The small grab pill from the reference sheet. */
+.grabber {
+  width: 54px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  margin: -6px auto 2px;
+}
+
+.titleBlock {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  letter-spacing: -0.035em;
+}
+
+.author {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.controlRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px 18px;
+}
+
+.tabsWrap {
+  max-width: 460px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.panel {
+  padding-top: 4px;
+}
+
+.notes {
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-muted);
+}
+
+.notesTitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.notesText {
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--ink);
+  font-weight: 500;
+  white-space: pre-wrap;
+}
+
+.footerRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+  padding-top: 18px;
+}
+
+.footerLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--tap);
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-muted);
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--ink);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.footerLink:hover {
+  background: var(--surface-sunken);
+}
+
+.missing {
+  padding: 30px 8px;
+  text-align: center;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* --- Desktop: photo beside the recipe instead of stacked above it. --- */
+@media (min-width: 1024px) {
+  .card {
+    display: grid;
+    grid-template-columns: minmax(360px, 44%) 1fr;
+    align-items: stretch;
+  }
+
+  .hero {
+    height: 100%;
+  }
+
+  .content {
+    padding: 34px 38px 38px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  .grabber {
+    display: none;
+  }
+
+  .titleBlock,
+  .controlRow {
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .tabsWrap {
+    margin: 0;
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 719px) {
+  .page {
+    padding: 4px 12px 24px;
+  }
+
+  .content {
+    padding: 22px 20px 28px;
+  }
+
+  .controlRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+}

@@ -1,0 +1,88 @@
+.hero {
+  position: relative;
+  background: var(--surface-sunken);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  color: var(--ink-faint);
+  background:
+    radial-gradient(420px 220px at 30% 20%, var(--sage-100), transparent 70%),
+    linear-gradient(140deg, var(--sage-200), var(--sage-400));
+}
+
+.placeholderLabel {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(20, 23, 26, 0.45);
+}
+
+.controls {
+  position: absolute;
+  inset: 0;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.circleButton {
+  pointer-events: auto;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--ink);
+  box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.6);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.circleButton:hover {
+  transform: scale(1.06);
+}
+
+.circleButton:active {
+  transform: scale(0.96);
+}
+
+.favorite {
+  color: var(--ink-faint);
+}
+
+.favoriteOn {
+  color: var(--heart);
+}
+
+/* Soft scrim so white controls stay legible on a pale photo. */
+.scrim {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 120px;
+  background: linear-gradient(rgba(0, 0, 0, 0.18), transparent);
+  pointer-events: none;
+}
+
+@media (max-width: 719px) {
+  .image,
+  .placeholder {
+    min-height: 230px;
+  }
+}
